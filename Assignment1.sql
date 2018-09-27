@@ -1,3 +1,4 @@
+-- Drop all tables
 
 DROP TABLE baseoption;
 DROP TABLE servwork;
@@ -10,6 +11,7 @@ DROP TABLE options;
 DROP TABLE car;
 DROP TABLE customer;
 
+-- Create customer table
 CREATE TABLE customer(
     cname CHAR(20) NOT NULL,
     cstreet CHAR(20) NOT NULL,
@@ -22,6 +24,7 @@ CREATE TABLE customer(
     CONSTRAINT cname_pk PRIMARY KEY (cname)
 );
 
+-- Create car table
 CREATE TABLE car(
     serial CHAR(8) NOT NULL,
     cname CHAR(20),
@@ -43,6 +46,7 @@ CREATE TABLE car(
     CONSTRAINT cname_car_fk FOREIGN KEY (cname) REFERENCES customer(cname)
 );
 
+-- Create options table
 CREATE TABLE options(
     ocode CHAR(4) NOT NULL,
     odesc CHAR(30),
@@ -52,6 +56,7 @@ CREATE TABLE options(
     CONSTRAINT ocode_pk PRIMARY KEY (ocode) 
 );
 
+-- Create prospect table
 CREATE TABLE prospect(
     cname CHAR(20) NOT NULL,
     make CHAR(10) CONSTRAINT prospect_make_nn NOT NULL CHECK (make IN ('ACURA','MERCEDES','LAND ROVER','JAGUAR')),
@@ -66,7 +71,7 @@ CREATE TABLE prospect(
     CONSTRAINT prospect_unique UNIQUE (cname, make, model, cyear, color, trim, ocode)
 );
 
-
+-- Create servinv table
 CREATE TABLE servinv(
     servinv CHAR(5) NOT NULL,
     serdate date NOT NULL,
@@ -82,7 +87,7 @@ CREATE TABLE servinv(
     CONSTRAINT serial_servinv_fk FOREIGN KEY (serial) REFERENCES car(serial)
 );
 
-
+-- Create employee table
 CREATE TABLE employee(
     empname CHAR(20) NOT NULL,
     startdate DATE NOT NULL,
@@ -91,9 +96,9 @@ CREATE TABLE employee(
     title CHAR(26),
     
     CONSTRAINT empname_pk PRIMARY KEY (empname)  
-    
 );
 
+-- Create sale invoice table
 CREATE TABLE saleinv(
     saleinv CHAR(6) NOT NULL,
     cname CHAR(20) NOT NULL,
@@ -117,12 +122,13 @@ CREATE TABLE saleinv(
     CONSTRAINT cname_saleinv_fk FOREIGN KEY (cname) REFERENCES customer(cname),
     CONSTRAINT serial_saleinv_fk FOREIGN KEY (serial) REFERENCES car(serial),
     CONSTRAINT tradeserial_fk FOREIGN KEY (tradeserial) REFERENCES car(serial)
-      
 );
 
+-- Create two sequences for sales and service invoices
 CREATE SEQUENCE saleinv_seq;
 CREATE SEQUENCE servinv_seq;
 
+-- Create invoption table
 CREATE TABLE invoption(
     saleinv CHAR(6) NOT NULL,
     ocode CHAR(4) NOT NULL,
@@ -133,16 +139,18 @@ CREATE TABLE invoption(
     CONSTRAINT ocode_invoption_fk FOREIGN KEY (ocode) REFERENCES options(ocode)
 );
 
+
+-- Create table for service work
 CREATE TABLE servwork(
     workdesc CHAR(80) NOT NULL,
     servinv CHAR(5) NOT NULL,
         
-    
     CONSTRAINT servinv_servwork_fk FOREIGN KEY (servinv) REFERENCES servinv(servinv),
     PRIMARY KEY (workdesc, servinv)
 );
 
 
+-- Create table for base option
 CREATE TABLE baseoption(
     serial CHAR(8) NOT NULL,
     ocode CHAR(4) NOT NULL,
