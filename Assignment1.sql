@@ -13,7 +13,7 @@ DROP TABLE customer;
 
 -- Create customer table
 CREATE TABLE customer(
-    cname CHAR(20) NOT NULL,
+    cname CHAR(20),
     cstreet CHAR(20) NOT NULL,
     ccity CHAR(20) NOT NULL,
     cprov CHAR(20) NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE customer(
 
 -- Create car table
 CREATE TABLE car(
-    serial CHAR(8) NOT NULL,
+    serial CHAR(8),
     cname CHAR(20),
     make CHAR(10),
     model CHAR(8) NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE car(
 
 -- Create options table
 CREATE TABLE options(
-    ocode CHAR(4) NOT NULL,
+    ocode CHAR(4),
     odesc CHAR(30),
     olist NUMERIC(7,2),
     ocost NUMERIC(7,2),
@@ -59,7 +59,7 @@ CREATE TABLE options(
 -- Create prospect table
 CREATE TABLE prospect(
     cname CHAR(20) NOT NULL,
-    make CHAR(10) CONSTRAINT prospect_make_nn NOT NULL CHECK (make IN ('ACURA','MERCEDES','LAND ROVER','JAGUAR')),
+    make CHAR(10),
     model CHAR(8),
     cyear CHAR(4),
     color CHAR(12),
@@ -68,12 +68,13 @@ CREATE TABLE prospect(
             
     CONSTRAINT cname_prospect_fk FOREIGN KEY (cname) REFERENCES customer(cname),
     CONSTRAINT ocode_prospect_fk FOREIGN KEY (ocode) REFERENCES options(ocode),
+    CONSTRAINT prospect_make_nn NOT NULL CHECK (make IN ('ACURA','MERCEDES','LAND ROVER','JAGUAR')),
     CONSTRAINT prospect_unique UNIQUE (cname, make, model, cyear, color, trim, ocode)
 );
 
 -- Create servinv table
 CREATE TABLE servinv(
-    servinv CHAR(5) NOT NULL,
+    servinv CHAR(5),
     serdate date NOT NULL,
     cname CHAR(20) NOT NULL,
     serial CHAR(8) NOT NULL,
@@ -89,7 +90,7 @@ CREATE TABLE servinv(
 
 -- Create employee table
 CREATE TABLE employee(
-    empname CHAR(20) NOT NULL,
+    empname CHAR(20),
     startdate DATE NOT NULL,
     manager CHAR(20) REFERENCES employee(empname),
     commissionrate NUMERIC(2,0),
@@ -100,7 +101,7 @@ CREATE TABLE employee(
 
 -- Create sale invoice table
 CREATE TABLE saleinv(
-    saleinv CHAR(6) NOT NULL,
+    saleinv CHAR(6),
     cname CHAR(20) NOT NULL,
     salesman CHAR(20) NOT NULL,
     saledate DATE CONSTRAINT salesinv_saledate_nn NOT NULL CHECK (saledate > TO_DATE('01-JAN-1990','DD-MON-YYYY')),
@@ -130,11 +131,11 @@ CREATE SEQUENCE servinv_seq;
 
 -- Create invoption table
 CREATE TABLE invoption(
-    saleinv CHAR(6) NOT NULL,
-    ocode CHAR(4) NOT NULL,
+    saleinv CHAR(6),
+    ocode CHAR(4),
     saleprice NUMERIC(7,2) NOT NULL,
     
-    CONSTRAINT invoption_unique unique (saleinv, ocode),
+    CONSTRAINT saleinvocode_pk PRIMARY KEY (saleinv, ocode),
     CONSTRAINT saleinv_invoption_fk FOREIGN KEY (saleinv) REFERENCES saleinv(saleinv),
     CONSTRAINT ocode_invoption_fk FOREIGN KEY (ocode) REFERENCES options(ocode)
 );
@@ -142,8 +143,8 @@ CREATE TABLE invoption(
 
 -- Create table for service work
 CREATE TABLE servwork(
-    workdesc CHAR(80) NOT NULL,
-    servinv CHAR(5) NOT NULL,
+    workdesc CHAR(80),
+    servinv CHAR(5),
         
     CONSTRAINT servinv_servwork_fk FOREIGN KEY (servinv) REFERENCES servinv(servinv),
     PRIMARY KEY (workdesc, servinv)
@@ -152,8 +153,8 @@ CREATE TABLE servwork(
 
 -- Create table for base option
 CREATE TABLE baseoption(
-    serial CHAR(8) NOT NULL,
-    ocode CHAR(4) NOT NULL,
+    serial CHAR(8),
+    ocode CHAR(4),
     
     PRIMARY KEY (serial, ocode),
     CONSTRAINT serial_baseoption_fk FOREIGN KEY (serial) REFERENCES car(serial)
